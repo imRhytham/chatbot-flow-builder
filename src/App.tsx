@@ -7,6 +7,11 @@ import ReactFlow, {
 	applyNodeChanges,
 	Node,
 	NodeChange,
+	Connection,
+	Edge,
+	addEdge,
+	applyEdgeChanges,
+	EdgeChange,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import SettingsPanel from "./components/SettingsPanel";
@@ -14,8 +19,10 @@ import { useAppDispatch, useAppSelector } from "./redux/store";
 import MessageNode from "./components/MessageNode";
 import {
 	dropNode,
+	setEdges,
 	setNodes,
 	setSelectedNode,
+	addFlowEdge,
 } from "./redux/chatbotFlowSlice/chatbotFlowSlice";
 import { MessageNodeType } from "./types/types";
 
@@ -43,7 +50,7 @@ function App() {
 			if (nodeType && flowContainerRef.current && reactFlowInstance) {
 				const flowContainerBounds =
 					flowContainerRef.current.getBoundingClientRect();
-				const position = reactFlowInstance.project({
+				const position = reactFlowInstance.screenToFlowPosition({
 					x: e.clientX - flowContainerBounds.left,
 					y: e.clientY - flowContainerBounds.top,
 				});
@@ -74,6 +81,25 @@ function App() {
 		dispatch(setSelectedNode(null));
 	}, [dispatch]);
 
+	//function to handle edges
+	const onEdgesChange = useCallback(
+		(changedEdges: EdgeChange[]) => {
+			dispatch(setEdges(applyEdgeChanges(changedEdges, edges)));
+		},
+		[dispatch, edges]
+	);
+
+	//function to handle connection to nodes
+	const onConnect = useCallback(
+		(params: Connection | Edge) => {
+			const edge = params as Edge;
+			if (edge.source && edge.target) {
+				dispatch(addFlowEdge(edge));
+			}
+		},
+		[dispatch]
+	);
+
 	return (
 		<div className="flex flex-row min-h-screen lg:flex-row gap-1">
 			<div className="flex-grow h-screen" ref={flowContainerRef}>
@@ -83,8 +109,8 @@ function App() {
 					nodeTypes={nodeTypes}
 					onNodesChange={onNodesChange}
 					onNodeClick={onNodeClick}
-					// onEdgesChange={onEdgesChange}
-					// onConnect={onConnect}
+					onEdgesChange={onEdgesChange}
+					onConnect={onConnect}
 					onDrop={handleDrop}
 					onDragOver={handleDragOver}
 					onInit={setReactFlowInstance}
@@ -93,7 +119,7 @@ function App() {
 				>
 					<Background gap={12} size={1} />
 					<Controls />
-					<MiniMap zoomable pannable />
+					<MiniMap zoomable pannable nodeStrokeWidth={3} />
 				</ReactFlow>
 			</div>
 			<SettingsPanel />

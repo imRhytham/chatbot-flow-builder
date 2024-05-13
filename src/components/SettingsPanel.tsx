@@ -71,7 +71,7 @@ const SettingsPanel = () => {
 								className="mt-4 bg-blue-500 text-white rounded p-2 hover:bg-blue-600"
 								onClick={() => dispatch(setSelectedNode(null))}
 							>
-								Go Back
+								Cancel
 							</button>
 						</div>
 					</div>

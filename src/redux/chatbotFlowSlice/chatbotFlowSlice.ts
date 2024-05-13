@@ -18,7 +18,7 @@ const initialState: FlowBuilderState = {
 };
 
 const flowBuilderSlice = createSlice({
-	name: "flowBuilder",
+	name: "chatFlowBuilder",
 	initialState,
 	reducers: {
 		dropNode: (
@@ -45,6 +45,9 @@ const flowBuilderSlice = createSlice({
 		setNodes: (state, action: PayloadAction<Node<MessageNodeType>[]>) => {
 			state.nodes = action.payload;
 		},
+		addFlowEdge: (state, action: PayloadAction<Edge>) => {
+			state.edges.push(action.payload);
+		},
 		setEdges: (state, action: PayloadAction<Edge[]>) => {
 			state.edges = action.payload;
 		},
@@ -57,6 +60,12 @@ const flowBuilderSlice = createSlice({
 	},
 });
 
-export const { dropNode, updateNode, setEdges, setNodes, setSelectedNode } =
-	flowBuilderSlice.actions;
+export const {
+	dropNode,
+	updateNode,
+	setEdges,
+	setNodes,
+	setSelectedNode,
+	addFlowEdge,
+} = flowBuilderSlice.actions;
 export default flowBuilderSlice.reducer;

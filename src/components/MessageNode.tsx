@@ -1,9 +1,10 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Handle, Position } from "reactflow";
 import { MessageNodeProps } from "../types/types";
 import { memo } from "react";
 import { BiMessageRoundedDetail } from "react-icons/bi";
 import { IoLogoWhatsapp } from "react-icons/io";
-// eslint-disable-next-line react-refresh/only-export-components
+
 const MessageNode = ({ selected, data }: MessageNodeProps) => {
 	return (
 		<div
@@ -12,7 +13,7 @@ const MessageNode = ({ selected, data }: MessageNodeProps) => {
 			} `}
 		>
 			<div className="flex flex-col">
-				<div className="max-h-max px-2 py-1 text-left text-black text-xs font-bold rounded-t-md bg-teal-300 flex flex-row justify-between item">
+				<div className="max-h-max px-2 py-1 text-left text-black text-xs font-bold rounded-t-md bg-teal-100 flex flex-row justify-between item">
 					<p className="inline-flex items-center gap-1">
 						<BiMessageRoundedDetail />
 						send message
