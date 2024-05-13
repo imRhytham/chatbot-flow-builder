@@ -1,6 +1,6 @@
 import { Node, Edge } from "reactflow";
 
-export interface MessageNode {
+export interface MessageNodeType {
 	label: string;
 }
 
@@ -12,7 +12,7 @@ export interface MessageNodeProps {
 }
 
 export interface FlowBuilderState {
-	nodes: Node<MessageNode>[];
+	nodes: Node<MessageNodeType>[];
 	edges: Edge[];
-	selectedNode: Node<MessageNode> | null;
+	selectedNode: Node<MessageNodeType> | null;
 }

@@ -12,7 +12,7 @@ const MessageNode = ({ selected, data }: MessageNodeProps) => {
 			} `}
 		>
 			<div className="flex flex-col">
-				<div className="max-h-max px-2 py-1 text-left text-black text-xs font-bold rounded-t-md bg-teal-300 flex flex-row justify-between items-center">
+				<div className="max-h-max px-2 py-1 text-left text-black text-xs font-bold rounded-t-md bg-teal-300 flex flex-row justify-between item">
 					<p className="inline-flex items-center gap-1">
 						<BiMessageRoundedDetail />
 						send message
