@@ -69,7 +69,7 @@ function App() {
 
 	//select the node
 	const onNodeClick = useCallback(
-		(e: React.MouseEvent, node: Node<MessageNodeType>) => {
+		(_event: unknown, node: Node<MessageNodeType>) => {
 			dispatch(setSelectedNode(node));
 		},
 		[dispatch]
