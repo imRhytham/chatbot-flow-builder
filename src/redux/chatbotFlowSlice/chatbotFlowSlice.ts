@@ -1,8 +1,9 @@
 // store/flowBuilderSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Node, Edge, XYPosition } from "reactflow";
+import { Node, Edge, XYPosition, ReactFlowJsonObject } from "reactflow";
 import { FlowBuilderState, MessageNodeType } from "../../types/types";
 import { generateID } from "../../utils/common";
+import { toast } from "react-toastify";
 
 const initialState: FlowBuilderState = {
 	nodes: [
@@ -48,14 +49,47 @@ const flowBuilderSlice = createSlice({
 		addFlowEdge: (state, action: PayloadAction<Edge>) => {
 			state.edges.push(action.payload);
 		},
-		setEdges: (state, action: PayloadAction<Edge[]>) => {
-			state.edges = action.payload;
-		},
+
 		setSelectedNode: (
 			state,
 			action: PayloadAction<Node<MessageNodeType> | null>
 		) => {
 			state.selectedNode = action.payload;
+		},
+		saveFlow: (state, action: PayloadAction<ReactFlowJsonObject>) => {
+			try {
+				//check if any nodes are unconnected
+				const isNodeUnconnected = () =>
+					state.nodes.filter((node) => {
+						!state.edges.find(
+							(edge) => edge.source === node.id || edge.target === node.id
+						);
+					});
+
+				if (isNodeUnconnected.length === 0) {
+					localStorage.setItem(
+						"chatbotFlowBuilder",
+						JSON.stringify(action.payload)
+					);
+					toast.success("Flow Saved Successfully");
+				} else {
+					throw new Error("Cannot Save Flow as nodes are un connected");
+				}
+			} catch (error) {
+				console.error("Failed to save data", error);
+				toast.error("Failed to save flow");
+			}
+		},
+		loadFlowFromLocalStorage: (state) => {
+			const flow = localStorage.getItem("chatbotFlowBuilder");
+			if (flow) {
+				const parsedFlow = JSON.parse(flow);
+				state.nodes = parsedFlow.nodes;
+				state.edges = parsedFlow.edges;
+				toast.success("Flow Retrieved Successfully");
+			} else {
+				toast.error("No Flow Found,try creating new");
+			}
 		},
 	},
 });
@@ -63,9 +97,10 @@ const flowBuilderSlice = createSlice({
 export const {
 	dropNode,
 	updateNode,
-	setEdges,
 	setNodes,
 	setSelectedNode,
 	addFlowEdge,
+	saveFlow,
+	loadFlowFromLocalStorage,
 } = flowBuilderSlice.actions;
 export default flowBuilderSlice.reducer;

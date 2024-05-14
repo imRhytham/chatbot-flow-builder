@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback, useRef, RefObject } from "react";
 import ReactFlow, {
-	Background,
 	Controls,
 	MiniMap,
 	ReactFlowInstance,
@@ -9,9 +8,6 @@ import ReactFlow, {
 	NodeChange,
 	Connection,
 	Edge,
-	addEdge,
-	applyEdgeChanges,
-	EdgeChange,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import SettingsPanel from "./components/SettingsPanel";
@@ -19,12 +15,15 @@ import { useAppDispatch, useAppSelector } from "./redux/store";
 import MessageNode from "./components/MessageNode";
 import {
 	dropNode,
-	setEdges,
 	setNodes,
 	setSelectedNode,
 	addFlowEdge,
+	saveFlow,
+	loadFlowFromLocalStorage,
 } from "./redux/chatbotFlowSlice/chatbotFlowSlice";
 import { MessageNodeType } from "./types/types";
+import { Slide, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
 	const [reactFlowInstance, setReactFlowInstance] =
@@ -81,15 +80,7 @@ function App() {
 		dispatch(setSelectedNode(null));
 	}, [dispatch]);
 
-	//function to handle edges
-	const onEdgesChange = useCallback(
-		(changedEdges: EdgeChange[]) => {
-			dispatch(setEdges(applyEdgeChanges(changedEdges, edges)));
-		},
-		[dispatch, edges]
-	);
-
-	//function to handle connection to nodes
+	//function to add connection to nodes
 	const onConnect = useCallback(
 		(params: Connection | Edge) => {
 			const edge = params as Edge;
@@ -100,30 +91,74 @@ function App() {
 		[dispatch]
 	);
 
+	//save the flow to the local storage
+	const saveChatbotFlow = () => {
+		const flow = reactFlowInstance?.toObject();
+		if (flow) {
+			console.log(flow);
+			dispatch(saveFlow(flow));
+		}
+	};
+
+	//retrieve flow from localstorage
+	const loadFlow = () => {
+		dispatch(loadFlowFromLocalStorage());
+	};
+
 	return (
-		<div className="flex flex-row min-h-screen lg:flex-row gap-1">
-			<div className="flex-grow h-screen" ref={flowContainerRef}>
-				<ReactFlow
-					nodes={nodes}
-					edges={edges}
-					nodeTypes={nodeTypes}
-					onNodesChange={onNodesChange}
-					onNodeClick={onNodeClick}
-					onEdgesChange={onEdgesChange}
-					onConnect={onConnect}
-					onDrop={handleDrop}
-					onDragOver={handleDragOver}
-					onInit={setReactFlowInstance}
-					onPaneClick={onPaneClick}
-					fitView
-				>
-					<Background gap={12} size={1} />
-					<Controls />
-					<MiniMap zoomable pannable nodeStrokeWidth={3} />
-				</ReactFlow>
+		<>
+			<ToastContainer
+				position="top-center"
+				autoClose={5000}
+				hideProgressBar={true}
+				newestOnTop={false}
+				theme="colored"
+				draggable={false}
+				transition={Slide}
+			/>
+			<div className="h-screen">
+				<div className="h-[10%] p-4 bg-gray-100 border border-gray-200 flex justify-between items-center p-">
+					<h1 className="text-3xl text-blue-500 font-bold">
+						Chatbot Flow Builder
+					</h1>
+					<div className="inline-flex gap-2">
+						<button
+							onClick={saveChatbotFlow}
+							className="bg-white p-2 border-2 border-blue-500 rounded flex justify-center items-center text-blue-500 hover:bg-blue-500 hover:text-white transition-colors duration-200"
+						>
+							Save Flow
+						</button>
+						<button
+							onClick={loadFlow}
+							className="bg-white p-2 border-2 border-blue-500 rounded flex justify-center items-center text-blue-500 hover:bg-blue-500 hover:text-white transition-colors duration-200"
+						>
+							Load Flow
+						</button>
+					</div>
+				</div>
+				<div className="flex flex-row lg:flex-row gap-1 h-[90%] ">
+					<div className="flex-grow h-full" ref={flowContainerRef}>
+						<ReactFlow
+							nodes={nodes}
+							edges={edges}
+							nodeTypes={nodeTypes}
+							onNodesChange={onNodesChange}
+							onNodeClick={onNodeClick}
+							onConnect={onConnect}
+							onDrop={handleDrop}
+							onDragOver={handleDragOver}
+							onInit={setReactFlowInstance}
+							onPaneClick={onPaneClick}
+							fitView
+						>
+							<Controls />
+							<MiniMap zoomable pannable nodeStrokeWidth={3} />
+						</ReactFlow>
+					</div>
+					<SettingsPanel />
+				</div>
 			</div>
-			<SettingsPanel />
-		</div>
+		</>
 	);
 }
 

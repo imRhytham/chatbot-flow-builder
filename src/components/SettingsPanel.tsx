@@ -27,7 +27,7 @@ const SettingsPanel = () => {
 		e.dataTransfer.effectAllowed = "move";
 	};
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setMessage(e.target.value);
 	};
 
@@ -46,16 +46,15 @@ const SettingsPanel = () => {
 	};
 
 	return (
-		<div className="border-r-2 border-gray-200 p-4 text-sm bg-gray-100 w-64 h-screen text-black">
+		<div className="border border-gray-200 p-4 text-sm bg-gray-100 w-64 h-full text-black">
 			{selectedNode ? (
 				<>
 					<div>
 						<h3 className="text-xl mb-2 text-blue-900">Update Node</h3>
 						<label className="block mb-2 text-sm font-medium text-blue-900">
-							Node Name:
+							Message
 						</label>
-						<input
-							type="text"
+						<textarea
 							className="block w-full pt-2 px-3 pb-3 text-gray-700 border border-blue-300 rounded-lg bg-white focus:outline-none focus:border-blue-500"
 							value={message}
 							onChange={handleChange}
